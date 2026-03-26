@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>What's That HAZMAT — AI-Powered DOT Placard Identifier</title>
+<meta name="description" content="Instantly identify any HAZMAT placard with AI. Know the hazard, UN number, danger level, and emergency response in seconds. Essential for first responders, truck drivers, and safety professionals.">
+<meta property="og:title" content="What's That HAZMAT">
+<meta property="og:description" content="Instantly identify any HAZMAT placard with AI. Essential for first responders, drivers, and safety professionals.">
+<meta property="og:url" content="https://whatsthathazmat.com">
+<link rel="canonical" href="https://whatsthathazmat.com">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --black: #0d0f0f;
+  --white: #ffffff;
+  --off-white: #f8f7f4;
+  --amber: #f5a800;
+  --amber-light: #fff3d4;
+  --amber-dark: #cc8800;
+  --red: #cc2200;
+  --muted: #6b7060;
+  --border: #e8e4dc;
+  --text: #1a1a16;
+  --text-light: #5a5a50;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Lora', Georgia, serif;
+  color: var(--text);
+  background: var(--white);
+  overflow-x: hidden;
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
+.nav-diamond {
+  width: 32px; height: 32px;
+  background: var(--amber);
+  transform: rotate(45deg);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.nav-diamond span {
+  transform: rotate(-45deg);
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  color: var(--black);
+  letter-spacing: 0.5px;
+}
+.nav-title {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--black);
+  letter-spacing: 1px;
+}
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  list-style: none;
+}
+.nav-links a {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 1px;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--black); }
+.nav-cta {
+  background: var(--black) !important;
+  color: var(--white) !important;
+  padding: 8px 20px !important;
+  border-radius: 2px;
+  letter-spacing: 1.5px !important;
+}
+.nav-cta:hover { background: var(--amber) !important; color: var(--black) !important; }
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  background: var(--black);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 120px 24px 80px;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.015) 2px, rgba(255,255,255,0.015) 4px);
+  pointer-events: none;
+}
+.hero-diamond-bg {
+  position: absolute;
+  width: 600px; height: 600px;
+  border: 1px solid rgba(245,168,0,0.08);
+  transform: rotate(45deg);
+  top: 50%; left: 50%;
+  margin-top: -300px; margin-left: -300px;
+  pointer-events: none;
+}
+.hero-diamond-bg-2 {
+  position: absolute;
+  width: 900px; height: 900px;
+  border: 1px solid rgba(245,168,0,0.04);
+  transform: rotate(45deg);
+  top: 50%; left: 50%;
+  margin-top: -450px; margin-left: -450px;
+  pointer-events: none;
+}
+.hero-content {
+  position: relative;
+  text-align: center;
+  max-width: 780px;
+  z-index: 2;
+}
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(245,168,0,0.12);
+  border: 1px solid rgba(245,168,0,0.3);
+  color: var(--amber);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 2px;
+  padding: 6px 16px;
+  border-radius: 2px;
+  margin-bottom: 32px;
+}
+.hero-badge-dot {
+  width: 6px; height: 6px;
+  background: var(--amber);
+  border-radius: 50%;
+  animation: blink 1.5s ease-in-out infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+.hero h1 {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: clamp(42px, 7vw, 80px);
+  color: var(--white);
+  line-height: 1.0;
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+}
+.hero h1 span { color: var(--amber); }
+.hero-sub {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 500;
+  font-size: clamp(20px, 3vw, 28px);
+  color: rgba(255,255,255,0.5);
+  letter-spacing: 3px;
+  margin-bottom: 28px;
+}
+.hero-desc {
+  font-size: clamp(16px, 2vw, 19px);
+  color: rgba(255,255,255,0.65);
+  line-height: 1.8;
+  max-width: 560px;
+  margin: 0 auto 48px;
+  font-style: italic;
+}
+.hero-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 72px;
+}
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--amber);
+  color: var(--black);
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 17px;
+  letter-spacing: 2px;
+  padding: 16px 32px;
+  border-radius: 2px;
+  text-decoration: none;
+  transition: all 0.2s;
+  border: 2px solid var(--amber);
+}
+.btn-primary:hover { background: #ffc020; border-color: #ffc020; transform: translateY(-1px); }
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: transparent;
+  color: var(--white);
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 600;
+  font-size: 17px;
+  letter-spacing: 2px;
+  padding: 16px 32px;
+  border-radius: 2px;
+  text-decoration: none;
+  transition: all 0.2s;
+  border: 2px solid rgba(255,255,255,0.2);
+}
+.btn-secondary:hover { border-color: rgba(255,255,255,0.5); }
+
+/* Placard showcase */
+.hero-placards {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+  opacity: 0.85;
+}
+.mini-placard {
+  width: 64px; height: 64px;
+  transform: rotate(45deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  color: white;
+  border: 2px solid rgba(255,255,255,0.3);
+  transition: transform 0.3s;
+}
+.mini-placard:hover { transform: rotate(45deg) scale(1.1); }
+.mp-red { background: #cc2200; }
+.mp-yellow { background: #f5c400; color: #000; border-color: rgba(0,0,0,0.2); }
+.mp-blue { background: #1155cc; }
+.mp-green { background: #1a7a3c; }
+.mp-black { background: #111; }
+.mp-orange { background: #ff5500; }
+.mini-placard-num { transform: rotate(-45deg); font-size: 9px; text-align: center; line-height: 1.2; }
+
+/* ── SECTIONS ── */
+section { padding: 96px 24px; }
+.container { max-width: 1100px; margin: 0 auto; }
+.section-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 3px;
+  color: var(--amber-dark);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+  max-width: 60px;
+}
+.section-title {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: clamp(32px, 5vw, 52px);
+  color: var(--text);
+  letter-spacing: 1px;
+  line-height: 1.1;
+  margin-bottom: 20px;
+}
+.section-desc {
+  font-size: 18px;
+  color: var(--text-light);
+  line-height: 1.8;
+  max-width: 600px;
+}
+
+/* ── HOW IT WORKS ── */
+.how-section { background: var(--off-white); }
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 2px;
+  margin-top: 56px;
+  background: var(--border);
+  border: 1px solid var(--border);
+}
+.step-card {
+  background: var(--white);
+  padding: 40px 32px;
+  position: relative;
+}
+.step-num {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 64px;
+  color: var(--amber-light);
+  line-height: 1;
+  margin-bottom: 16px;
+}
+.step-title {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 22px;
+  letter-spacing: 1px;
+  color: var(--text);
+  margin-bottom: 12px;
+}
+.step-desc {
+  font-size: 15px;
+  color: var(--text-light);
+  line-height: 1.7;
+}
+.step-icon {
+  position: absolute;
+  top: 32px; right: 32px;
+  width: 40px; height: 40px;
+  background: var(--amber);
+  transform: rotate(45deg);
+  display: flex; align-items: center; justify-content: center;
+}
+.step-icon span { transform: rotate(-45deg); font-size: 18px; }
+
+/* ── FEATURES ── */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+  margin-top: 56px;
+}
+.feature-card {
+  padding: 32px;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.feature-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 3px; height: 100%;
+  background: var(--amber);
+  transform: scaleY(0);
+  transition: transform 0.2s;
+  transform-origin: bottom;
+}
+.feature-card:hover { border-color: var(--amber); box-shadow: 0 4px 24px rgba(245,168,0,0.08); }
+.feature-card:hover::before { transform: scaleY(1); }
+.feature-icon {
+  width: 44px; height: 44px;
+  background: var(--amber-light);
+  border: 1px solid rgba(245,168,0,0.3);
+  transform: rotate(45deg);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 24px;
+}
+.feature-icon span { transform: rotate(-45deg); font-size: 20px; }
+.feature-title {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 20px;
+  letter-spacing: 1px;
+  color: var(--text);
+  margin-bottom: 10px;
+}
+.feature-desc { font-size: 15px; color: var(--text-light); line-height: 1.7; }
+.feature-pro {
+  display: inline-block;
+  background: var(--amber-light);
+  color: var(--amber-dark);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  padding: 2px 8px;
+  border-radius: 2px;
+  margin-top: 12px;
+}
+
+/* ── WHO IT'S FOR ── */
+.who-section { background: var(--black); }
+.who-section .section-label { color: rgba(245,168,0,0.7); }
+.who-section .section-label::after { background: rgba(255,255,255,0.1); }
+.who-section .section-title { color: var(--white); }
+.who-section .section-desc { color: rgba(255,255,255,0.5); }
+.who-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2px;
+  margin-top: 56px;
+  background: rgba(255,255,255,0.05);
+}
+.who-card {
+  background: #111;
+  padding: 36px 32px;
+  border: 1px solid rgba(255,255,255,0.05);
+  transition: background 0.2s;
+}
+.who-card:hover { background: #161a1a; }
+.who-role {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--amber);
+  margin-bottom: 12px;
+}
+.who-title {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 22px;
+  color: var(--white);
+  margin-bottom: 12px;
+}
+.who-desc { font-size: 15px; color: rgba(255,255,255,0.45); line-height: 1.7; font-style: italic; }
+
+/* ── TESTIMONIALS ── */
+.testimonials-section { background: var(--off-white); }
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+  margin-top: 56px;
+}
+.testimonial-card {
+  background: var(--white);
+  padding: 36px;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  position: relative;
+}
+.testimonial-quote {
+  font-size: 16px;
+  line-height: 1.8;
+  color: var(--text);
+  font-style: italic;
+  margin-bottom: 24px;
+}
+.testimonial-quote::before {
+  content: '\201C';
+  font-size: 48px;
+  color: var(--amber);
+  line-height: 0;
+  vertical-align: -20px;
+  margin-right: 4px;
+  font-family: Georgia, serif;
+}
+.testimonial-author {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  color: var(--muted);
+}
+.testimonial-author strong {
+  display: block;
+  font-size: 13px;
+  color: var(--text);
+  margin-bottom: 2px;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 1px;
+}
+
+/* ── PRICING ── */
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+  margin-top: 56px;
+  max-width: 800px;
+}
+.pricing-card {
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.pricing-card.featured {
+  border-color: var(--amber);
+  box-shadow: 0 8px 40px rgba(245,168,0,0.12);
+}
+.pricing-header {
+  padding: 32px;
+  border-bottom: 1px solid var(--border);
+}
+.pricing-card.featured .pricing-header {
+  background: var(--black);
+}
+.pricing-badge {
+  display: inline-block;
+  background: rgba(224,60,60,0.1);
+  border: 1px solid rgba(224,60,60,0.3);
+  color: #cc2200;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 2px;
+  padding: 3px 10px;
+  border-radius: 2px;
+  margin-bottom: 16px;
+}
+.pricing-name {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 28px;
+  letter-spacing: 2px;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+.pricing-card.featured .pricing-name { color: var(--white); }
+.pricing-price {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.pricing-amount {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 48px;
+  color: var(--amber);
+  line-height: 1;
+}
+.pricing-period {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: 1px;
+}
+.pricing-note {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 0.5px;
+}
+.pricing-card.featured .pricing-note { color: rgba(255,255,255,0.4); }
+.pricing-features {
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.pricing-feature {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 15px;
+  color: var(--text-light);
+  line-height: 1.5;
+}
+.pricing-check {
+  width: 18px; height: 18px;
+  background: var(--amber);
+  transform: rotate(45deg);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.pricing-check span { transform: rotate(-45deg); font-size: 9px; color: var(--black); font-weight: 700; }
+.pricing-cta {
+  display: block;
+  margin: 0 32px 32px;
+  padding: 14px;
+  text-align: center;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 17px;
+  letter-spacing: 2px;
+  border-radius: 2px;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.pricing-cta-free {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+.pricing-cta-free:hover { border-color: var(--black); }
+.pricing-cta-pro {
+  background: var(--amber);
+  color: var(--black);
+  border: 1px solid var(--amber);
+}
+.pricing-cta-pro:hover { background: #ffc020; }
+
+/* ── CONTACT ── */
+.contact-section { background: var(--black); }
+.contact-section .section-title { color: var(--white); }
+.contact-section .section-label { color: rgba(245,168,0,0.7); }
+.contact-section .section-label::after { background: rgba(255,255,255,0.1); }
+.contact-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 2px;
+  margin-top: 56px;
+  background: rgba(255,255,255,0.05);
+}
+.contact-card {
+  background: #111;
+  padding: 36px 32px;
+}
+.contact-card-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--amber);
+  margin-bottom: 12px;
+}
+.contact-card-value {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+  color: var(--white);
+  text-decoration: none;
+  display: block;
+  transition: color 0.2s;
+}
+.contact-card-value:hover { color: var(--amber); }
+.contact-card-desc {
+  font-size: 14px;
+  color: rgba(255,255,255,0.35);
+  margin-top: 8px;
+  font-style: italic;
+  line-height: 1.6;
+}
+
+/* ── FOOTER ── */
+footer {
+  background: #080a0a;
+  padding: 40px 24px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+.footer-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.footer-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+.footer-logo-diamond {
+  width: 24px; height: 24px;
+  background: var(--amber);
+  transform: rotate(45deg);
+  display: flex; align-items: center; justify-content: center;
+}
+.footer-logo-diamond span { transform: rotate(-45deg); font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 8px; color: var(--black); }
+.footer-name {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  color: rgba(255,255,255,0.5);
+  letter-spacing: 1px;
+}
+.footer-links {
+  display: flex;
+  gap: 24px;
+  list-style: none;
+}
+.footer-links a {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: rgba(255,255,255,0.3);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.footer-links a:hover { color: var(--amber); }
+.footer-copy {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  color: rgba(255,255,255,0.2);
+}
+
+/* ── DISCLAIMER BANNER ── */
+.disclaimer-bar {
+  background: rgba(224,60,60,0.08);
+  border-top: 1px solid rgba(224,60,60,0.15);
+  padding: 12px 24px;
+  text-align: center;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  color: #a05050;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .nav-links { display: none; }
+  .hero { padding: 100px 20px 60px; }
+  section { padding: 64px 20px; }
+  .steps-grid { grid-template-columns: 1fr; }
+  .footer-inner { flex-direction: column; align-items: flex-start; }
+}
+
+/* ── SCROLL ANIMATIONS ── */
+.fade-in {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">
+    <div class="nav-diamond"><span>WTH</span></div>
+    <span class="nav-title">What's That HAZMAT</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#how">HOW IT WORKS</a></li>
+    <li><a href="#features">FEATURES</a></li>
+    <li><a href="#who">WHO IT'S FOR</a></li>
+    <li><a href="#pricing">PRICING</a></li>
+    <li><a href="#contact">CONTACT</a></li>
+    <li><a href="https://hazmatreader.vercel.app" class="nav-cta">TRY APP</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-diamond-bg"></div>
+  <div class="hero-diamond-bg-2"></div>
+  <div class="hero-content">
+    <div class="hero-badge">
+      <div class="hero-badge-dot"></div>
+      AI-POWERED · DOT PLACARD IDENTIFICATION
+    </div>
+    <h1>What's That<br><span>HAZMAT?</span></h1>
+    <div class="hero-sub">KNOW IN SECONDS. NOT MINUTES.</div>
+    <p class="hero-desc">Point your camera at any diamond-shaped HAZMAT placard on a truck or rail car. Our AI identifies the hazard, explains the danger in plain English, and tells you exactly what to do.</p>
+    <div class="hero-actions">
+      <a href="#" class="btn-primary">&#8595; APP STORE &nbsp; COMING SOON</a>
+      <a href="https://hazmatreader.vercel.app" class="btn-secondary">TRY WEB VERSION &rarr;</a>
+    </div>
+    <div class="hero-placards">
+      <div class="mini-placard mp-red"><div class="mini-placard-num">1993<br>3</div></div>
+      <div class="mini-placard mp-yellow"><div class="mini-placard-num">1479<br>5.1</div></div>
+      <div class="mini-placard mp-black"><div class="mini-placard-num">1760<br>8</div></div>
+      <div class="mini-placard mp-blue"><div class="mini-placard-num">1017<br>2.3</div></div>
+      <div class="mini-placard mp-red"><div class="mini-placard-num">1203<br>3</div></div>
+      <div class="mini-placard mp-yellow"><div class="mini-placard-num">2910<br>7</div></div>
+      <div class="mini-placard mp-green"><div class="mini-placard-num">1956<br>2.2</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how-section" id="how">
+  <div class="container">
+    <div class="section-label">HOW IT WORKS</div>
+    <h2 class="section-title">Three steps.<br>Instant answers.</h2>
+    <p class="section-desc">No training required. No manual lookup. Just point, scan, and know.</p>
+    <div class="steps-grid fade-in">
+      <div class="step-card">
+        <div class="step-icon"><span>&#128247;</span></div>
+        <div class="step-num">01</div>
+        <div class="step-title">PHOTOGRAPH THE PLACARD</div>
+        <p class="step-desc">Use your camera or upload an existing photo. The app handles any angle, lighting condition, or image quality. Multiple placards in one image are detected automatically.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-icon"><span>&#129504;</span></div>
+        <div class="step-num">02</div>
+        <div class="step-title">AI IDENTIFIES THE HAZARD</div>
+        <p class="step-desc">Our AI reads the diamond shape, color, symbol, UN number, and hazard class — then cross-references the DOT database to identify the exact material and danger level.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-icon"><span>&#128680;</span></div>
+        <div class="step-num">03</div>
+        <div class="step-title">GET ACTIONABLE INFORMATION</div>
+        <p class="step-desc">Receive the hazard class, UN number, danger level, common examples of the material, and clear emergency response guidance — all in plain English, not technical jargon.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-icon"><span>&#11088;</span></div>
+        <div class="step-num">PRO</div>
+        <div class="step-title">GO DEEPER WITH PRO</div>
+        <p class="step-desc">Pro users also get historic accident data, the full DOT Emergency Response Guidebook, nearby hospital and HAZMAT team locations, regulatory compliance info, and incident reporting.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="container">
+    <div class="section-label">FEATURES</div>
+    <h2 class="section-title">Everything you need<br>at a HAZMAT scene.</h2>
+    <p class="section-desc">Built for speed, accuracy, and reliability when it matters most.</p>
+    <div class="features-grid fade-in">
+      <div class="feature-card">
+        <div class="feature-icon"><span>&#128269;</span></div>
+        <div class="feature-title">INSTANT AI IDENTIFICATION</div>
+        <p class="feature-desc">Photograph any DOT placard and get a complete identification in seconds — hazard class, UN number, material type, and danger level.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><span>&#128681;</span></div>
+        <div class="feature-title">EMERGENCY RESPONSE GUIDANCE</div>
+        <p class="feature-desc">Clear, plain-English instructions on what to do if there's an accident — evacuation distances, fire response, spill containment, and more.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><span>&#128240;</span></div>
+        <div class="feature-title">NEWS & REGULATORY UPDATES</div>
+        <p class="feature-desc">Latest incidents and regulatory updates from DOT, OSHA, and EPA specific to each hazardous material you scan.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><span>&#128722;</span></div>
+        <div class="feature-title">REQUIRED SUPPLIES & PPE</div>
+        <p class="feature-desc">Know exactly what protective equipment and containment supplies are needed before you approach a hazmat scene.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><span>&#128165;</span></div>
+        <div class="feature-title">HISTORIC ACCIDENTS</div>
+        <p class="feature-desc">Learn from past incidents — notable spills, disasters, and accidents involving each specific material with lessons learned.</p>
+        <div class="feature-pro">PRO FEATURE</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><span>&#128205;</span></div>
+        <div class="feature-title">NEARBY FACILITIES</div>
+        <p class="feature-desc">Instantly locate the nearest hospitals, fire stations, and certified HAZMAT response teams from your current location.</p>
+        <div class="feature-pro">PRO FEATURE</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><span>&#128216;</span></div>
+        <div class="feature-title">FULL ERG DATA</div>
+        <p class="feature-desc">Access the complete DOT Emergency Response Guidebook for every UN number — the same reference used by first responders nationwide.</p>
+        <div class="feature-pro">PRO FEATURE</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><span>&#128203;</span></div>
+        <div class="feature-title">REGULATORY COMPLIANCE</div>
+        <p class="feature-desc">DOT, OSHA, and EPA requirements for transporting, storing, and handling each specific hazardous material.</p>
+        <div class="feature-pro">PRO FEATURE</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><span>&#128338;</span></div>
+        <div class="feature-title">SCAN HISTORY</div>
+        <p class="feature-desc">Every placard you've scanned saved with date, time, and thumbnail — a permanent log of every hazmat encounter.</p>
+        <div class="feature-pro">PRO FEATURE</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHO IT'S FOR -->
+<section class="who-section" id="who">
+  <div class="container">
+    <div class="section-label">WHO IT'S FOR</div>
+    <h2 class="section-title">Built for professionals.<br>Accessible to everyone.</h2>
+    <p class="section-desc">Whether you respond to HAZMAT incidents for a living or just want to know what's on the truck next to you — this app is for you.</p>
+    <div class="who-grid fade-in">
+      <div class="who-card">
+        <div class="who-role">FIRST RESPONDERS</div>
+        <div class="who-title">Firefighters, Paramedics & Police</div>
+        <p class="who-desc">Arrive on scene with instant context before you approach. Know the hazard class, isolation distances, and emergency response protocol before you get out of the truck.</p>
+      </div>
+      <div class="who-card">
+        <div class="who-role">COMMERCIAL DRIVERS</div>
+        <div class="who-title">Truck & Rail Operators</div>
+        <p class="who-desc">Understand every placard you haul and every vehicle sharing your road. DOT compliance reference at your fingertips, 24/7.</p>
+      </div>
+      <div class="who-card">
+        <div class="who-role">SAFETY PROFESSIONALS</div>
+        <div class="who-title">HAZMAT Officers & Safety Teams</div>
+        <p class="who-desc">Quick reference for facility walkthroughs, incident documentation, training exercises, and regulatory compliance checks.</p>
+      </div>
+      <div class="who-card">
+        <div class="who-role">INVESTIGATORS</div>
+        <div class="who-title">Insurance Adjusters & Inspectors</div>
+        <p class="who-desc">Accurately document hazardous materials at accident scenes. Generate professional incident reports with one tap.</p>
+      </div>
+      <div class="who-card">
+        <div class="who-role">STUDENTS & TRAINEES</div>
+        <div class="who-title">Emergency Management Programs</div>
+        <p class="who-desc">Learn the DOT placard system visually and interactively. Perfect for emergency management, chemistry, and occupational safety coursework.</p>
+      </div>
+      <div class="who-card">
+        <div class="who-role">GENERAL PUBLIC</div>
+        <div class="who-title">Curious Drivers & Bystanders</div>
+        <p class="who-desc">Ever driven past a tanker and wondered what's inside? Now you can know — and know what to do if something goes wrong.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials-section" id="testimonials">
+  <div class="container">
+    <div class="section-label">TESTIMONIALS</div>
+    <h2 class="section-title">Trusted by those<br>who need it most.</h2>
+    <div class="testimonials-grid fade-in">
+      <div class="testimonial-card">
+        <p class="testimonial-quote">This is exactly what we've needed on the rig. No more flipping through the ERG book at 2am — point, scan, know what we're dealing with.</p>
+        <div class="testimonial-author">
+          <strong>Captain M. Rodriguez</strong>
+          Station 12 · Fire Department
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <p class="testimonial-quote">I drive tankers across 12 states. This app gives me confidence that I actually understand what I'm hauling and what to do in an emergency.</p>
+        <div class="testimonial-author">
+          <strong>T. Williams</strong>
+          Commercial Tanker Driver · 18 years
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <p class="testimonial-quote">We've added this to our required tools for all safety officers. The regulatory compliance feature alone is worth the Pro subscription.</p>
+        <div class="testimonial-author">
+          <strong>Director of Safety Operations</strong>
+          Chemical Manufacturing Facility
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing">
+  <div class="container">
+    <div class="section-label">PRICING</div>
+    <h2 class="section-title">Simple, honest pricing.</h2>
+    <p class="section-desc">Start free. Upgrade when you're ready. Lock in the introductory rate before it increases.</p>
+    <div class="pricing-grid fade-in">
+      <div class="pricing-card">
+        <div class="pricing-header">
+          <div class="pricing-name">FREE</div>
+          <div class="pricing-price">
+            <span class="pricing-amount">$0</span>
+            <span class="pricing-period">forever</span>
+          </div>
+          <div class="pricing-note">No credit card required</div>
+        </div>
+        <div class="pricing-features">
+          <div class="pricing-feature"><div class="pricing-check"><span>&#10003;</span></div>Scan & identify any HAZMAT placard</div>
+          <div class="pricing-feature"><div class="pricing-check"><span>&#10003;</span></div>Hazard class, UN number & danger level</div>
+          <div class="pricing-feature"><div class="pricing-check"><span>&#10003;</span></div>Plain-English explanations</div>
+          <div class="pricing-feature"><div class="pricing-check"><span>&#10003;</span></div>Emergency response guidance</div>
+          <div class="pricing-feature"><div class="pricing-check"><span>&#10003;</span></div>Latest news & regulatory updates</div>
+          <div class="pricing-feature"><div class="pricing-check"><span>&#10003;</span></div>Required supplies & PPE list</div>
+          <div class="pricing-feature"><div class="pricing-check"><span>&#10003;</span></div>20 sample placards for practice</div>
+        </div>
+        <a href="https://hazmatreader.vercel.app" class="pricing-cta pricing-cta-free">TRY FREE &rarr;</a>
+      </div>
+      <div class="pricing-card featured">
+        <div class="pricing-header">
+          <div class="pricing-badge">LIMITED INTRODUCTORY PRICE</div>
+          <div class="pricing-name" style="color:white;">PRO</div>
+          <div class="pricing-price">
+            <span class="pricing-amount">$4.99</span>
+            <span class="pricing-period" style="color:rgba(255,255,255,0.4);">/ year</span>
+          </div>
+          <div class="pricing-note">Regular price $9.99/yr &middot; Lock in now &middot; Cancel anytime</div>
+        </div>
+        <div class="pricing-features">
+          <div class="pricing-feature"><div class="pricing-check"><span>&#10003;</span></div>Everything in Free</div>
+          <div class="pricing-feature"><div class="pricing-check"><span>&#10003;</span></div>Historic accidents & notable incidents</div>
+          <div class="pricing-feature"><div class="pricing-check"><span>&#10003;</span></div>Full DOT Emergency Response Guidebook</div>
+          <div class="pricing-feature"><div class="pricing-check"><span>&#10003;</span></div>Nearby hospitals, fire stations & HAZMAT teams</div>
+          <div class="pricing-feature"><div class="pricing-check"><span>&#10003;</span></div>DOT, OSHA & EPA regulatory compliance</div>
+          <div class="pricing-feature"><div class="pricing-check"><span>&#10003;</span></div>One-tap incident reporting</div>
+          <div class="pricing-feature"><div class="pricing-check"><span>&#10003;</span></div>Full scan history (25 scans)</div>
+        </div>
+        <a href="https://hazmatreader.vercel.app" class="pricing-cta pricing-cta-pro">LOCK IN $4.99/YEAR &rarr;</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact-section" id="contact">
+  <div class="container">
+    <div class="section-label">CONTACT</div>
+    <h2 class="section-title">Get in touch.</h2>
+    <div class="contact-grid fade-in">
+      <div class="contact-card">
+        <div class="contact-card-label">SUPPORT</div>
+        <a href="mailto:whatsthathazmat@gmail.com" class="contact-card-value">whatsthathazmat@gmail.com</a>
+        <p class="contact-card-desc">Questions, bug reports, or feedback. We respond within 24 hours.</p>
+      </div>
+      <div class="contact-card">
+        <div class="contact-card-label">WEB APP</div>
+        <a href="https://hazmatreader.vercel.app" class="contact-card-value">hazmatreader.vercel.app</a>
+        <p class="contact-card-desc">Try the full app in your browser right now — no download required.</p>
+      </div>
+      <div class="contact-card">
+        <div class="contact-card-label">DISCLAIMER</div>
+        <span class="contact-card-value" style="font-size:14px;cursor:default;">For Reference Only</span>
+        <p class="contact-card-desc">Always call 911 in an emergency. Do not rely solely on this app for life-safety decisions.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DISCLAIMER BAR -->
+<div class="disclaimer-bar">
+  &#9888; FOR REFERENCE ONLY &middot; ALWAYS CALL 911 IN AN EMERGENCY &middot; DO NOT RELY SOLELY ON THIS APP FOR LIFE-SAFETY DECISIONS
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <a href="#" class="footer-logo">
+      <div class="footer-logo-diamond"><span>WTH</span></div>
+      <span class="footer-name">WHAT'S THAT HAZMAT</span>
+    </a>
+    <ul class="footer-links">
+      <li><a href="#how">HOW IT WORKS</a></li>
+      <li><a href="#pricing">PRICING</a></li>
+      <li><a href="privacy.html">PRIVACY POLICY</a></li>
+      <li><a href="mailto:whatsthathazmat@gmail.com">CONTACT</a></li>
+    </ul>
+    <span class="footer-copy">&#169; 2026 What's That HAZMAT. All rights reserved.</span>
+  </div>
+</footer>
+
+<script>
+// Scroll animations
+var observer = new IntersectionObserver(function(entries) {
+  entries.forEach(function(entry) {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.fade-in').forEach(function(el) {
+  observer.observe(el);
+});
+</script>
+</body>
+</html>
